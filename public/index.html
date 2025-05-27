@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loja de Roupas</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      background: #f0f2f5;
+      color: #333;
+    }
+    header {
+      background: #4CAF50;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    main {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-bottom: 1px solid #eee;
+    }
+    .card-body {
+      padding: 1rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .nome {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: #222;
+    }
+    .descricao {
+      flex-grow: 1;
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+    .preco {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #4CAF50;
+    }
+    .loading,
+    .error {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #666;
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Loja de Roupas
+  </header>
+  <main id="container-roupas">
+    <p class="loading">Carregando roupas...</p>
+  </main>
+
+  <script>
+    async function carregarRoupas() {
+      const container = document.getElementById('container-roupas');
+      try {
+        const resposta = await fetch('/api/roupas');
+        if (!resposta.ok) throw new Error('Falha na requisição');
+        const roupas = await resposta.json();
+        if (roupas.length === 0) {
+          container.innerHTML = '<p class="loading">Nenhuma roupa cadastrada ainda.</p>';
+          return;
+        }
+        container.innerHTML = '';
+        roupas.forEach(r => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <img src="${r.imagemUrl}" alt="Imagem da roupa ${r.nome}" />
+            <div class="card-body">
+              <div class="nome">${r.nome}</div>
+              <div class="descricao">${r.descricao}</div>
+              <div class="preco">R$ ${r.preco.toFixed(2)}</div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        container.innerHTML = `<p class="error">Erro ao carregar roupas: ${err.message}</p>`;
+      }
+    }
+
+    window.onload = carregarRoupas;
+  </script>
+</body>
+</html>
