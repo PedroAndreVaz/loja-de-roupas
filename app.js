@@ -12,7 +12,7 @@ const uri = process.env.MONGODB_URI;
 
 app.use(express.static('public'));
 
-// Função para conectar com MongoDB Atlas
+
 async function conectarBanco() {
   try {
     await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -25,7 +25,7 @@ async function conectarBanco() {
 
 
 
-// Definição do esquema e modelo Mongoose para roupas
+
 const roupaSchema = new mongoose.Schema({
   nome: { type: String, required: true },
   descricao: { type: String, required: true },
@@ -38,17 +38,17 @@ const Roupa = mongoose.model('Roupa', roupaSchema);
 
 
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 
 
 
-// Conectar ao banco
+
 await conectarBanco();
 
 
-// Rotas
+
 app.get('/api/roupas', async (req, res) => {
   try {
     const roupas = await Roupa.find();
